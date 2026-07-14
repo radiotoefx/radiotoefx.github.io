@@ -90,7 +90,7 @@
     const previous = articles[index - 1];
     const next = articles[index + 1];
     const category = categoryOf(article);
-    const planned = `
+    const planned = article.body ? "" : `
       <div class="draft-notice"><small>NOTE 00</small><div><h2>这篇笔记正在整理中</h2><p>补充正文后，首页、分类与左侧目录会自动同步。</p></div></div>
       <div class="article-body"><p class="lead">这篇文章将从一个具体问题开始，逐步连接公式、直觉与工程实现。</p><h2>计划包含</h2><ul>${article.outline.map((item) => `<li>${item}</li>`).join("")}</ul></div>`;
     app.innerHTML = `
@@ -98,7 +98,7 @@
         <button class="back" data-home>← 返回全部文章</button>
         <header class="article-header"><div class="article-meta"><i></i>${category.name}<time>${article.date}</time></div><h1>${article.title}</h1><p>${article.summary}</p></header>
         <div class="article-body longform">${article.body || ""}</div>
-        ${article.body ? "" : planned}
+        ${planned}
         <footer>radiotoe / ${category.name}</footer>
         <nav class="post-navigation">
           ${previous ? `<button data-article="${previous.slug}"><small>← 上一篇</small><span>${previous.title}</span></button>` : "<span></span>"}
