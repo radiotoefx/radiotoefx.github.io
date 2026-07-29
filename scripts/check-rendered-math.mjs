@@ -58,6 +58,9 @@ const css = (await Promise.all(cssFiles.map((file) => readFile(file, "utf8")))).
 if (!css.includes(".article-view .article-body .katex-display")) {
   errors.push("built CSS is missing the article display-math rule");
 }
+if (!/\.article-view \.article-body \.katex-display\{[^}]*padding:\.45em 0 \.35em/.test(css)) {
+  errors.push("built CSS is missing the display-math clipping guard");
+}
 if (css.includes("min-width:max-content")) {
   errors.push("built CSS contains the layout-breaking min-width:max-content rule");
 }
