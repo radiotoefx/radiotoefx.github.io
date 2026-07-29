@@ -1,0 +1,38 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import roadmap from "../data/roadmap.json";
+import { categories, categoryName } from "../data/site";
+import { formatDate, getPublishedPosts, postUrl } from "../lib/posts";
+const posts = await getPublishedPosts();
+---
+<BaseLayout posts={posts}>
+  <section class="hero">
+    <div class="hero-kicker">FIELD NOTES <i></i></div>
+    <h1>拆开模型，<br /><em>看见智能的结构。</em></h1>
+    <p>radiotoe 记录生成模型与大模型的底层原理：从问题出发，保留推导、实验与工程实现之间的联系。</p>
+    <div class="hero-foot"><span>从底层开始</span><span>持续更新中</span></div>
+  </section>
+  <section class="article-section">
+    <div class="section-heading"><div><p class="eyebrow">Published notes</p><h2>文章</h2></div>
+      <div class="filters"><button data-filter="all" class="active">全部</button>{categories.map(c=><button data-filter={c.id}>{c.name}</button>)}</div>
+    </div>
+    <div class="article-list">{posts.map((post,index)=>
+      <article class="article-card" data-category={post.data.category}><a href={postUrl(post)}>
+        <span class="article-number">{String(index+1).padStart(2,"0")}</span>
+        <span class="article-card-body"><span class="article-meta"><i></i>{categoryName(post.data.category)}<time>{formatDate(post.data.date)}</time></span>
+          <strong>{post.data.title}</strong><span class="summary">{post.data.description}</span><span class="tags">{post.data.tags.map(t=>`#${t}`).join("　")}</span>
+        </span><span class="arrow">↗</span>
+      </a></article>
+    )}</div>
+  </section>
+  <section class="roadmap-section">
+    <div class="section-heading"><div><p class="eyebrow">Writing roadmap</p><h2>写作计划</h2></div><p>计划条目独立管理，不会进入文章搜索或上下篇导航。</p></div>
+    <div class="roadmap-grid">{roadmap.map(item=><article><small>{categoryName(item.category)}</small><h3>{item.title}</h3><p>{item.description}</p><span>{item.tags.map(t=>`#${t}`).join("　")}</span></article>)}</div>
+  </section>
+  <section class="about" id="about"><p class="eyebrow">About radiotoe</p><div><h2>从问题出发，<br />把推导走完。</h2><p>这里整理生成模型与语言模型的基础结构、训练方法、推理机制与对齐技术。文章尽量明确每个符号、假设和结论的适用范围。</p></div></section>
+  <script>
+    const buttons=document.querySelectorAll<HTMLButtonElement>("[data-filter]");
+    const cards=document.querySelectorAll<HTMLElement>(".article-card");
+    buttons.forEach(button=>button.addEventListener("click",()=>{const selected=button.dataset.filter;buttons.forEach(i=>i.classList.toggle("active",i===button));cards.forEach(card=>card.hidden=selected!=="all"&&card.dataset.category!==selected)}));
+  </script>
+</BaseLayout>

@@ -1,0 +1,39 @@
+{
+  "name": "radiotoefx.github.io",
+  "version": "2.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "scripts": {
+    "dev": "ASTRO_TELEMETRY_DISABLED=1 astro dev",
+    "build": "npm run check:content && cross-env ASTRO_TELEMETRY_DISABLED=1 astro build && npm run check:rendered",
+    "preview": "ASTRO_TELEMETRY_DISABLED=1 astro preview",
+    "check": "cross-env ASTRO_TELEMETRY_DISABLED=1 astro check",
+    "check:content": "node scripts/check-content.mjs",
+    "check:rendered": "node scripts/check-rendered-math.mjs",
+    "new:post": "node scripts/new-post.mjs",
+    "remove:post": "node scripts/remove-post.mjs",
+    "post:move": "node scripts/move-post.mjs",
+    "roadmap:move": "node scripts/move-roadmap.mjs",
+    "category:list": "node scripts/manage-category.mjs list",
+    "category:add": "node scripts/manage-category.mjs add",
+    "category:rename": "node scripts/manage-category.mjs rename",
+    "category:change-id": "node scripts/manage-category.mjs change-id",
+    "category:remove": "node scripts/manage-category.mjs remove"
+  },
+  "dependencies": {
+    "@astrojs/markdown-remark": "7.2.1",
+    "@astrojs/sitemap": "3.7.3",
+    "astro": "7.1.4",
+    "katex": "0.18.1",
+    "rehype-katex": "7.0.1",
+    "remark-math": "6.0.0"
+  },
+  "devDependencies": {
+    "@astrojs/check": "0.9.6",
+    "cross-env": "^10.1.0",
+    "typescript": "5.9.3"
+  }
+}

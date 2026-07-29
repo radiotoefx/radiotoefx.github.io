@@ -1,0 +1,6 @@
+[
+  {"slug":"tokenization-and-embedding","title":"Token、向量与语言的入口","description":"理解分词、嵌入空间与位置编码如何把文本变成可计算的对象。","category":"foundations","tags":["Tokenization","Embedding"]},
+  {"slug":"pretraining-objective","title":"下一个词，为什么足够？","description":"从最大似然到交叉熵，讨论简单的预测目标如何催生复杂能力。","category":"training","tags":["Pre-training","Loss"]},
+  {"slug":"kv-cache-explained","title":"KV Cache 与逐 Token 生成","description":"拆解自回归推理、缓存复用，以及显存与速度之间的交换。","category":"inference","tags":["Inference","KV Cache"]},
+  {"slug":"rlhf-and-preference","title":"从偏好数据到 RLHF","description":"梳理监督微调、奖励模型与策略优化之间的关系。","category":"alignment","tags":["RLHF","Alignment"]}
+]

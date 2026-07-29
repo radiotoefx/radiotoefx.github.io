@@ -1,0 +1,23 @@
+---
+import type { GetStaticPaths } from "astro";
+import { render } from "astro:content";
+import BaseLayout from "../../layouts/BaseLayout.astro";
+import { categoryName } from "../../data/site";
+import { formatDate, getPublishedPosts, postUrl, withBase } from "../../lib/posts";
+export const getStaticPaths=(async()=>{const posts=await getPublishedPosts();return posts.map(post=>({params:{slug:post.data.slug},props:{post}}))}) satisfies GetStaticPaths;
+const { post }=Astro.props;
+const posts=await getPublishedPosts();
+const {Content,headings}=await render(post);
+const index=posts.findIndex(item=>item.data.slug===post.data.slug),newer=posts[index-1],older=posts[index+1];
+const toc=headings.filter(h=>h.depth===2);
+---
+<BaseLayout title={`${post.data.title} — radiotoe`} description={post.data.description} posts={posts} activeSlug={post.data.slug} article>
+  <article class="article-page">
+    <a class="back" href={withBase("/")}>← 返回全部文章</a>
+    <header class="article-header"><div class="article-meta"><i></i>{categoryName(post.data.category)}<time>{formatDate(post.data.date)}</time></div><h1>{post.data.title}</h1><p>{post.data.description}</p></header>
+    <nav class="post-toc" aria-label="本文目录"><p>Table of Contents</p><ol>{toc.map(h=><li><a href={`#${h.slug}`}>{h.text}</a></li>)}</ol></nav>
+    <div class="article-body longform"><Content /></div>
+    <footer>radiotoe / {categoryName(post.data.category)}</footer>
+    <nav class="post-navigation">{newer?<a href={postUrl(newer)}><small>← 更新一篇</small><span>{newer.data.title}</span></a>:<span></span>}{older?<a href={postUrl(older)} class="next"><small>更早一篇 →</small><span>{older.data.title}</span></a>:<span></span>}</nav>
+  </article>
+</BaseLayout>

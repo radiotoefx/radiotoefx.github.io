@@ -1,0 +1,111 @@
+---
+import "katex/dist/katex.min.css";
+import "../styles/global.css";
+import { site, categories, categoryName } from "../data/site";
+import type { Post } from "../lib/posts";
+import { postUrl, withBase } from "../lib/posts";
+
+interface Props {
+  title?: string;
+  description?: string;
+  posts: Post[];
+  activeSlug?: string;
+  article?: boolean;
+}
+const { title = site.title, description = site.description, posts, activeSlug, article = false } = Astro.props;
+const canonical = new URL(Astro.url.pathname, site.url);
+const searchIndex = posts.map((post) => ({
+  title: post.data.title,
+  description: post.data.description,
+  category: categoryName(post.data.category),
+  tags: post.data.tags,
+  body: (post.body ?? "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").slice(0, 12000),
+  url: postUrl(post)
+}));
+---
+<!doctype html>
+<html lang="zh-CN" data-theme="ivory">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description} />
+    <meta name="theme-color" content="#fbfaf7" />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href={`${import.meta.env.BASE_URL}favicon.svg`} />
+    <title>{title}</title>
+    <script is:inline define:vars={{ legacyBase: import.meta.env.BASE_URL }}>
+      const legacySlug = new URLSearchParams(location.search).get("article");
+      const basePath = legacyBase.endsWith("/") ? legacyBase : `${legacyBase}/`;
+      if (
+        location.pathname === basePath &&
+        legacySlug &&
+        /^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(legacySlug)
+      ) {
+        location.replace(`${basePath}posts/${legacySlug}/`);
+      }
+    </script>
+    <script is:inline>const t=localStorage.getItem("radiotoe-theme");if(t)document.documentElement.dataset.theme=t;</script>
+  </head>
+  <body class:list={{ "article-view": article }}>
+    <header class="site-header">
+      <div class="header-left">
+        <button id="mobile-menu" class="icon-button mobile-only" aria-label="打开文章目录">☰</button>
+        <button id="sidebar-toggle" class="icon-button" aria-label="收起文章目录">◧</button>
+        <a class="brand" href={withBase("/")} aria-label="返回 radiotoe 首页"><span class="brand-mark">r<i>t</i></span><span>radiotoe</span></a>
+      </div>
+      <nav class="top-nav" aria-label="主导航">
+        <a href={withBase("/")}>文章</a><a href={`${withBase("/")}#about`}>关于</a>
+        <div class="theme-switcher" aria-label="选择主题">
+          <button data-set-theme="ivory" aria-label="米白主题"><span></span></button>
+          <button data-set-theme="white" aria-label="纯白主题"><span></span></button>
+          <button data-set-theme="black" aria-label="深黑主题"><span></span></button>
+        </div>
+        <button id="search-open" class="search-open" aria-label="搜索文章">⌕ <span>搜索</span></button>
+      </nav>
+    </header>
+    <button id="scrim" class="scrim" aria-label="关闭目录"></button>
+    <div class="page-grid">
+      <aside id="sidebar" class="sidebar" aria-label="全站文章目录">
+        <div class="sidebar-mobile-head"><span>文章目录</span><button id="sidebar-close" aria-label="关闭文章目录">×</button></div>
+        <p class="eyebrow">Knowledge index</p><h2>模型原理</h2>
+        <p class="sidebar-intro">从概率建模与矩阵运算到训练和对齐，沿着模型的内部路径逐层拆解。</p>
+        <nav class="category-nav">
+          {categories.map((category, index) => {
+            const items = posts.filter((post) => post.data.category === category.id);
+            if (!items.length) return null;
+            return <section class="category open">
+              <button class="category-title" aria-expanded="true"><span><b>{String(index + 1).padStart(2, "0")}</b>{category.name}</span><span>−</span></button>
+              <div class="category-items">{items.map((post) =>
+                <a href={postUrl(post)} class:list={{ active: activeSlug === post.data.slug }}><span>{post.data.title}</span></a>
+              )}</div>
+            </section>;
+          })}
+        </nav>
+      </aside>
+      <main id="app"><slot /></main>
+    </div>
+    <div id="search-dialog" class="search-dialog" hidden>
+      <div class="search-panel" role="dialog" aria-modal="true" aria-label="搜索文章">
+        <label>⌕<input id="search-input" placeholder="搜索标题、正文、标签或主题…" autocomplete="off" /></label>
+        <div id="search-results"></div>
+      </div>
+    </div>
+    <script is:inline define:vars={{ searchIndex }}>
+      const grid=document.querySelector(".page-grid"),side=document.querySelector("#sidebar"),scrim=document.querySelector("#scrim");
+      const closeSide=()=>{side?.classList.remove("mobile-open");scrim?.classList.remove("visible")};
+      document.querySelector("#mobile-menu")?.addEventListener("click",()=>{side?.classList.add("mobile-open");scrim?.classList.add("visible")});
+      document.querySelector("#sidebar-close")?.addEventListener("click",closeSide);scrim?.addEventListener("click",closeSide);
+      if(localStorage.getItem("radiotoe-sidebar")==="collapsed")grid?.classList.add("sidebar-collapsed");
+      document.querySelector("#sidebar-toggle")?.addEventListener("click",()=>{grid?.classList.toggle("sidebar-collapsed");localStorage.setItem("radiotoe-sidebar",grid?.classList.contains("sidebar-collapsed")?"collapsed":"expanded")});
+      document.querySelectorAll(".category-title").forEach(b=>b.addEventListener("click",()=>{const s=b.closest(".category");s?.classList.toggle("open");const open=s?.classList.contains("open")??false;b.setAttribute("aria-expanded",String(open));if(b.lastElementChild)b.lastElementChild.textContent=open?"−":"+"}));
+      const theme=document.documentElement.dataset.theme||"ivory";
+      document.querySelectorAll("[data-set-theme]").forEach(b=>{b.classList.toggle("active",b.dataset.setTheme===theme);b.addEventListener("click",()=>{const t=b.dataset.setTheme;if(!t)return;document.documentElement.dataset.theme=t;localStorage.setItem("radiotoe-theme",t);document.querySelectorAll("[data-set-theme]").forEach(i=>i.classList.toggle("active",i===b))})});
+      const dialog=document.querySelector("#search-dialog"),input=document.querySelector("#search-input"),results=document.querySelector("#search-results");
+      const esc=v=>v.replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+      const run=()=>{const q=input.value.trim().toLocaleLowerCase();const found=searchIndex.filter(i=>!q||`${i.title} ${i.description} ${i.category} ${i.tags.join(" ")} ${i.body}`.toLocaleLowerCase().includes(q));results.innerHTML=`<p>${q?`找到 ${found.length} 篇`:"所有文章"}</p>${found.map(i=>`<a href="${i.url}"><span>${esc(i.title)}</span><small>${esc(i.category)}</small></a>`).join("")}`};
+      const open=()=>{dialog.hidden=false;run();requestAnimationFrame(()=>input.focus())};
+      document.querySelector("#search-open")?.addEventListener("click",open);input.addEventListener("input",run);dialog.addEventListener("click",e=>{if(e.target===dialog)dialog.hidden=true});
+      document.addEventListener("keydown",e=>{if(e.key==="Escape")dialog.hidden=true;if((e.metaKey||e.ctrlKey)&&e.key.toLowerCase()==="k"){e.preventDefault();open()}});
+    </script>
+  </body>
+</html>

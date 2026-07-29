@@ -1,0 +1,18 @@
+[
+  {
+    "id": "foundations",
+    "name": "基础结构"
+  },
+  {
+    "id": "training",
+    "name": "训练与数据"
+  },
+  {
+    "id": "inference",
+    "name": "推理与效率"
+  },
+  {
+    "id": "alignment",
+    "name": "对齐与智能"
+  }
+]

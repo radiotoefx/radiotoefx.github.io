@@ -1,0 +1,6 @@
+---
+import BaseLayout from "../layouts/BaseLayout.astro";
+import {getPublishedPosts,withBase} from "../lib/posts";
+const posts=await getPublishedPosts();
+---
+<BaseLayout title="页面不存在 — radiotoe" posts={posts}><section class="not-found"><p class="eyebrow">404</p><h1>这一页不存在。</h1><p>文章可能已经改名、删除，或仍在写作计划中。</p><a href={withBase("/")}>返回全部文章</a></section></BaseLayout>
