@@ -57,13 +57,12 @@ $$
 \begin{aligned}
 S^\star
 &=
-\arg\min_{S\subseteq\{1,\ldots,N\}}
+\operatorname*{arg\,min}_{S\subseteq\{1,\ldots,N\}}
 \mathbb E_{(X,y)}
 \left[
 \mathcal L\!\left(f_{\theta,S}(X),y\right)
 \right],\\
-\text{s.t.}\quad
-|S|&\le K.
+&\text{s.t.}\quad |S|\le K.
 \end{aligned}
 $$
 
@@ -784,7 +783,7 @@ $$
 \begin{aligned}
 S^\star
 =
-\arg\min_S
+\operatorname*{arg\,min}_{S}
 \big[
 &\mathcal L_{\mathrm{task}}(S)
 +\lambda_1\mathcal C(S)\\

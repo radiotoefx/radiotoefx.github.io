@@ -1,10 +1,21 @@
 import { readFile, readdir, access } from "node:fs/promises";
+import { createRequire } from "node:module";
 import { dirname, join, relative, resolve } from "node:path";
 
 const root = resolve("dist");
 const sourceRoot = resolve("src/content/posts");
 const publicBase = (process.env.PUBLIC_BASE || "/").replace(/\/+$/, "");
 const errors = [];
+const projectRequire = createRequire(import.meta.url);
+const rehypeKatexRequire = createRequire(import.meta.resolve("rehype-katex"));
+const cssKatexVersion = projectRequire("katex/package.json").version;
+const rendererKatexVersion = rehypeKatexRequire("katex/package.json").version;
+
+if (cssKatexVersion !== rendererKatexVersion) {
+  errors.push(
+    `KaTeX version mismatch: CSS uses ${cssKatexVersion}, renderer uses ${rendererKatexVersion}`
+  );
+}
 
 async function walk(directory) {
   const entries = await readdir(directory, { withFileTypes: true });
