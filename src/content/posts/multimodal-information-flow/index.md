@@ -33,7 +33,7 @@ draft: false
 这条路径是否足以解释完整的自回归生成
 ```
 
-本文不以某三篇论文为中心，也不按图像、视频、音频分别罗列工作，而是沿着真正的方法演进来组织材料：从 attention flow 与 causal tracing 出发，经过 token routing、head attribution、circuits、Sparse Autoencoder 与 Partial Information Decomposition，最后讨论视频时序、音视频竞争、prompt topology 和开放式生成。
+本文沿着真正的方法演进来组织材料：从 attention flow 与 causal tracing 出发，经过 token routing、head attribution、circuits、Sparse Autoencoder 与 Partial Information Decomposition，最后讨论视频时序、音视频竞争、prompt topology 和开放式生成。
 
 可以先给出全文的核心判断：
 
